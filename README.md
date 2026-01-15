@@ -51,6 +51,8 @@ A modern React Native mobile application for tracking macros, meals, and hydrati
 - **State Management**: React Hooks
 - **Image Processing**: Expo Image Picker & Manipulator
 
+> **⚠️ Important**: This app requires a deployed Supabase Edge Function (`analyze-meal`) to work properly. The Edge Function handles AI meal analysis using the Gemini API. Without it, the AI meal analysis feature will not function.
+
 ## Prerequisites
 
 - Node.js 20.17.0 or higher
@@ -86,6 +88,8 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
 
 ### 4. Supabase Setup
 
+> **🔴 Critical**: The app **requires** the Supabase Edge Function to be deployed for AI meal analysis to work.
+
 You'll need to set up the following in your Supabase project:
 
 #### Database Tables
@@ -96,16 +100,39 @@ You'll need to set up the following in your Supabase project:
 #### Storage Buckets
 - `meal-images`: For storing meal photos
 
-#### Edge Functions
-- `analyze-meal`: AI-powered meal analysis using Gemini API
+#### Edge Functions (Required for AI Features)
 
-Refer to the SQL files in the repository for complete database schema.
+The app depends on the `analyze-meal` Edge Function for AI-powered meal analysis. This function:
+- Receives meal images from the mobile app
+- Processes images with Google Gemini API
+- Returns nutritional estimates (calories, protein, carbs, fat)
+- Handles both image-based and text-based meal analysis
 
-### 5. Configure Supabase Secrets
+**To deploy the Edge Function:**
 
+1. Install Supabase CLI:
 ```bash
-npx supabase secrets set GEMINI_API_KEY=your-gemini-api-key
+npm install -g supabase
 ```
+
+2. Link your Supabase project:
+```bash
+supabase link --project-ref your-project-ref
+```
+
+3. Deploy the function:
+```bash
+supabase functions deploy analyze-meal
+```
+
+4. Set the Gemini API key as a secret:
+```bash
+supabase secrets set GEMINI_API_KEY=your-gemini-api-key
+```
+
+**Edge Function Repository**: The Edge Function code is available in a separate repository. You'll need to deploy it to your Supabase project before the app can perform AI meal analysis.
+
+Refer to the SQL files in the repository for complete database schema and storage policies.
 
 ## Running the App
 
