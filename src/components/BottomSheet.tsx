@@ -1,5 +1,5 @@
 import React, { forwardRef, ReactNode, useImperativeHandle, useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, Text, Modal, ScrollView, TouchableOpacity, Keyboard, Dimensions } from 'react-native';
+import { StyleSheet, View, Text, Modal, ScrollView, TouchableOpacity, Keyboard, Dimensions, KeyboardAvoidingView, Platform } from 'react-native';
 import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from '../constants/theme';
 
 interface BottomSheetProps {
@@ -76,26 +76,32 @@ export const BottomSheet = forwardRef<BottomSheetHandle, BottomSheetProps>(
                         activeOpacity={1}
                         onPress={handleClose}
                     />
-                    <View style={[styles.container, { maxHeight }]}>
-                        <View style={styles.handle} />
-                        <ScrollView
-                            ref={scrollViewRef}
-                            style={styles.scrollView}
-                            contentContainerStyle={[
-                                styles.contentContainer,
-                                keyboardHeight > 0 && { paddingBottom: keyboardHeight + 50 }
-                            ]}
-                            keyboardShouldPersistTaps="handled"
-                            showsVerticalScrollIndicator={false}
-                        >
-                            {title && (
-                                <View style={styles.header}>
-                                    <Text style={styles.title}>{title}</Text>
-                                </View>
-                            )}
-                            {children}
-                        </ScrollView>
-                    </View>
+                    <KeyboardAvoidingView
+                        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                        style={styles.keyboardView}
+                        keyboardVerticalOffset={0}
+                    >
+                        <View style={[styles.container, { maxHeight }]}>
+                            <View style={styles.handle} />
+                            <ScrollView
+                                ref={scrollViewRef}
+                                style={styles.scrollView}
+                                contentContainerStyle={[
+                                    styles.contentContainer,
+                                    keyboardHeight > 0 && { paddingBottom: SPACING['2xl'] }
+                                ]}
+                                keyboardShouldPersistTaps="handled"
+                                showsVerticalScrollIndicator={false}
+                            >
+                                {title && (
+                                    <View style={styles.header}>
+                                        <Text style={styles.title}>{title}</Text>
+                                    </View>
+                                )}
+                                {children}
+                            </ScrollView>
+                        </View>
+                    </KeyboardAvoidingView>
                 </View>
             </Modal>
         );
@@ -110,6 +116,9 @@ const styles = StyleSheet.create({
     },
     backdropTouchable: {
         flex: 1,
+    },
+    keyboardView: {
+        width: '100%',
     },
     container: {
         backgroundColor: COLORS.surface,
