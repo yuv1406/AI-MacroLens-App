@@ -1,196 +1,257 @@
-# MacroLens - AI Fitness Tracker
+# MacroLens - AI-Powered Fitness Tracking App
 
-A minimalist, modern, dark-themed fitness tracking mobile app built with Expo (React Native) and powered by Supabase + AI.
+A modern React Native mobile application for tracking macros, meals, and hydration with AI-powered meal analysis using Google's Gemini API.
+
+![MacroLens](https://img.shields.io/badge/Platform-Android-green)
+![Expo](https://img.shields.io/badge/Expo-SDK%2054-blue)
+![React Native](https://img.shields.io/badge/React%20Native-0.81-blue)
 
 ## Features
 
-✨ **Smart Tracking**
-- 📊 Dashboard with circular progress rings
-- 🎯 Goal-based calorie tracking (Cut/Maintain/Gain)
-- 📈 Macro targets (Protein, Carbs, Fats)
-- 💧 Hydration tracking with quick-add buttons
+### 🍽️ Meal Tracking
+- **AI Meal Analysis**: Take a photo of your meal and get instant macro estimates using Google Gemini AI
+- **Text-Based Analysis**: Describe your meal (e.g., "300g rice with 200g dal") for AI-estimated macros
+- **Manual Entry**: Input nutritional information directly from food labels
+- **Meal History**: View and manage your logged meals with detailed nutritional breakdowns
 
-🤖 **AI-Powered Meal Logging**
-- 📸 Take photo or upload from gallery
-- 🔍 AI analysis via Gemini Vision API
-- ✏️ Edit AI results before saving
-- 📝 Manual entry fallback
+### 💧 Hydration Tracking
+- Track daily water intake with visual progress indicators
+- Beautiful donut chart visualization
+- Quick-add water logging with customizable amounts
+- Daily hydration goals and progress tracking
 
-📱 **User Experience**
-- 🌑 Beautiful dark theme
-- ⚡ Smooth animations
-- 📋 Daily meal log with delete functionality
-- ⚙️ Customizable settings
+### 📊 Dashboard & Analytics
+- Real-time macro tracking (Protein, Carbs, Fats, Calories)
+- Daily progress visualization with circular progress rings
+- Weekly calendar view for tracking consistency
+- Time-based greetings with dynamic icons (sun/moon)
+- Personalized daily goals based on user profile
 
-## Quick Start
+### 👤 User Profile & Settings
+- Customizable daily macro goals
+- Personal information management (height, weight, age)
+- Activity level configuration
+- Goal-based calculations (weight loss, maintenance, gain)
 
-### Prerequisites
+### 🎨 Modern UI/UX
+- Dark mode optimized design
+- Smooth animations and transitions
+- Glassmorphic design elements
+- Custom icons and typography
+- Responsive layouts
 
-- Node.js 20.17+ installed
-- Expo Go app on your phone ([Android](https://play.google.com/store/apps/details?id=host.exp.exponent) or [iOS](https://apps.apple.com/app/expo-go/id982107779))
-- Supabase project with:
-  - `user_profiles` table
-  - `meals` table
-  - `hydration_logs` table
-  - `meal-images` storage bucket
-  - `analyze-meal` Edge Function deployed
+## Tech Stack
 
-### Setup
+- **Framework**: React Native with Expo SDK 54
+- **Language**: TypeScript
+- **Backend**: Supabase (PostgreSQL, Auth, Storage, Edge Functions)
+- **AI**: Google Gemini 2.0 Flash
+- **Navigation**: React Navigation v7
+- **Styling**: NativeWind (TailwindCSS for React Native)
+- **State Management**: React Hooks
+- **Image Processing**: Expo Image Picker & Manipulator
 
-1. **Configure environment:**
-   ```bash
-   cd mobile-app
-   cp .env .env.local
-   ```
-   
-   Edit `.env` and add your Supabase Anon Key:
-   ```
-   EXPO_PUBLIC_SUPABASE_URL=https://djtqlcljpmmuvvbptvhc.supabase.co
-   EXPO_PUBLIC_SUPABASE_ANON_KEY=your-actual-anon-key-here
-   ```
+## Prerequisites
 
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+- Node.js 20.17.0 or higher
+- npm or yarn
+- Expo Go app (for testing on device)
+- Android Studio (for building APK)
+- Supabase account
+- Google Gemini API key
 
-3. **Start the development server:**
-   ```bash
-   npx expo start
-   ```
+## Installation
 
-4. **Test on your phone:**
-   - Open Expo Go app
-   - Scan the QR code from your terminal
-   - App will load on your phone!
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/yuv1406/AI-MacroLens-App.git
+cd AI-MacroLens-App
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Environment Setup
+
+Create a `.env` file in the root directory:
+
+```env
+EXPO_PUBLIC_SUPABASE_URL=your-supabase-project-url
+EXPO_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+```
+
+### 4. Supabase Setup
+
+You'll need to set up the following in your Supabase project:
+
+#### Database Tables
+- `user_settings`: User profiles and daily goals
+- `meals`: Meal logs with nutritional information
+- `water_logs`: Hydration tracking entries
+
+#### Storage Buckets
+- `meal-images`: For storing meal photos
+
+#### Edge Functions
+- `analyze-meal`: AI-powered meal analysis using Gemini API
+
+Refer to the SQL files in the repository for complete database schema.
+
+### 5. Configure Supabase Secrets
+
+```bash
+npx supabase secrets set GEMINI_API_KEY=your-gemini-api-key
+```
+
+## Running the App
+
+### Development Mode
+
+```bash
+npm start
+```
+
+Then:
+- Scan the QR code with Expo Go (Android)
+- Press `a` to open on Android emulator
+- Press `w` to open in web browser
+
+### Building APK
+
+#### Using EAS Build (Recommended)
+
+1. Install EAS CLI:
+```bash
+npm install -g eas-cli
+```
+
+2. Login to Expo:
+```bash
+eas login
+```
+
+3. Build APK:
+```bash
+eas build --platform android --profile preview
+```
+
+The APK will be available for download once the build completes.
 
 ## Project Structure
 
 ```
 mobile-app/
 ├── src/
-│   ├── components/          # Reusable UI components
-│   │   ├── ui/             # Base components (Button, Card, Badge, etc.)
-│   │   ├── CalorieSummary.tsx
-│   │   ├── HydrationTracker.tsx
-│   │   ├── MacroBar.tsx
-│   │   └── MealCard.tsx
-│   ├── constants/          # Theme and default values
-│   │   ├── theme.ts        # Dark theme colors, typography, spacing
-│   │   └── defaults.ts     # Default user values and constants
-│   ├── hooks/              # Custom React hooks
-│   │   ├── useAuth.ts      # Authentication state
-│   │   ├── useUserProfile.ts
-│   │   ├── useMeals.ts
-│   │   └── useHydration.ts
-│   ├── navigation/         # React Navigation setup
-│   │   └── AppNavigator.tsx
-│   ├── screens/            # App screens
-│   │   ├── AuthScreen.tsx
+│   ├── components/        # Reusable UI components
+│   │   ├── icons/        # Custom SVG icons
+│   │   └── ui/           # UI primitives (Button, Card, Input, etc.)
+│   ├── screens/          # App screens
 │   │   ├── DashboardScreen.tsx
+│   │   ├── DailyLogScreen.tsx
 │   │   ├── AILogMealScreen.tsx
 │   │   ├── ManualLogMealScreen.tsx
-│   │   ├── DailyLogScreen.tsx
-│   │   └── SettingsScreen.tsx
-│   ├── services/           # API services
-│   │   └── mealAnalysis.ts # AI meal analysis integration
-│   ├── types/              # TypeScript definitions
-│   │   └── index.ts
-│   └── config/             # Configuration
-│       └── supabase.ts     # Supabase client
-├── App.tsx                 # Entry point
-├── app.json                # Expo configuration
-└── package.json            # Dependencies
+│   │   ├── SettingsScreen.tsx
+│   │   └── AuthScreen.tsx
+│   ├── hooks/            # Custom React hooks
+│   ├── services/         # API and service functions
+│   ├── navigation/       # Navigation configuration
+│   ├── config/           # App configuration
+│   ├── constants/        # Theme and constants
+│   ├── types/            # TypeScript type definitions
+│   └── utils/            # Utility functions
+├── assets/               # Images, fonts, icons
+├── app.json             # Expo configuration
+├── eas.json             # EAS Build configuration
+└── package.json         # Dependencies
 ```
 
-## Database Setup
+## Key Features Implementation
 
-Run these SQL commands in your Supabase SQL Editor:
+### AI Meal Analysis
+The app uses Google's Gemini 2.0 Flash model to analyze meal photos:
+1. User takes/selects a photo
+2. Image is compressed and uploaded to Supabase Storage
+3. Supabase Edge Function processes the image with Gemini API
+4. AI returns estimated macros and meal description
+5. User can edit values before saving
 
-```sql
--- User profiles table
-CREATE TABLE user_profiles (
-  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  maintenance_calories INTEGER DEFAULT 2000,
-  protein_target DECIMAL(5,1) DEFAULT 150.0,
-  carbs_target DECIMAL(5,1) DEFAULT 200.0,
-  fat_target DECIMAL(5,1) DEFAULT 60.0,
-  water_goal INTEGER DEFAULT 2500,
-  goal_mode TEXT DEFAULT 'maintain' CHECK (goal_mode IN ('cut', 'maintain', 'gain')),
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
+### Keyboard Handling
+Optimized keyboard behavior for meal logging screens:
+- Removed problematic `KeyboardAvoidingView`
+- Configured `ScrollView` with proper keyboard dismiss modes
+- Added extra padding to prevent content from being hidden
 
--- Hydration logs table
-CREATE TABLE hydration_logs (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
-  amount_ml INTEGER NOT NULL,
-  logged_at TIMESTAMPTZ DEFAULT NOW()
-);
+### Icon Visibility
+Fixed greeting icons (sun/moon) by:
+- Removing opacity that made icons hard to see
+- Using correct SVG paths from source files
+- Ensuring proper fill colors
 
--- Enable Row Level Security
-ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE hydration_logs ENABLE ROW LEVEL SECURITY;
+## Configuration Files
 
--- RLS Policies for user_profiles
-CREATE POLICY "Users can view own profile"
-  ON user_profiles FOR SELECT
-  USING (auth.uid() = id);
+### `app.json`
+- App metadata and configuration
+- Platform-specific settings (Android/iOS)
+- Permissions and capabilities
 
-CREATE POLICY "Users can update own profile"
-  ON user_profiles FOR UPDATE
-  USING (auth.uid() = id);
+### `eas.json`
+- Build profiles (development, preview, production)
+- Environment variables for builds
+- Platform-specific build configurations
 
-CREATE POLICY "Users can insert own profile"
-  ON user_profiles FOR INSERT
-  WITH CHECK (auth.uid() = id);
+## Dependencies
 
--- RLS Policies for hydration_logs
-CREATE POLICY "Users can view own hydration logs"
-  ON hydration_logs FOR SELECT
-  USING (auth.uid() = user_id);
+Key dependencies include:
+- `expo`: ~54.0.31
+- `react-native`: 0.81.5
+- `@supabase/supabase-js`: ^2.89.0
+- `@react-navigation/native`: ^7.1.26
+- `react-native-reanimated`: ~4.1.1
+- `nativewind`: ^4.0.1
+- `expo-image-picker`: ^17.0.10
 
-CREATE POLICY "Users can insert own hydration logs"
-  ON hydration_logs FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
-```
+See `package.json` for complete list.
 
-## Tech Stack
+## Troubleshooting
 
-- **Framework:** Expo / React Native
-- **Language:** TypeScript
-- **Backend:** Supabase (PostgreSQL + Edge Functions)
-- **AI:** Google Gemini 2.5 Flash Vision
-- **Navigation:** React Navigation v6
-- **State:** React Hooks + Supabase Realtime
-- **Animations:** Reanimated 3
-- **UI:** Custom dark theme components
+### Icons Not Visible
+- Ensure `react-native-svg` is properly installed
+- Check that icon components have proper fill colors
+- Verify opacity is not set too low
 
-## Development
+### Keyboard Scrolling Issues
+- Make sure `KeyboardAvoidingView` is not wrapping `ScrollView`
+- Use `keyboardDismissMode="on-drag"` on ScrollView
+- Add sufficient bottom padding to content
 
-### Available Scripts
+### Build Errors
+- Run `npx expo doctor` to check for dependency issues
+- Ensure all peer dependencies are installed
+- Clean and reinstall node_modules if needed
 
-- `npm start` - Start Expo dev server
-- `npm run android` - Start on Android emulator
-- `npm run ios` - Start on iOS simulator (macOS only)
-- `npm run web` - Start web version
+## Contributing
 
-### Tips
-
-- Use Expo Go for quick testing
-- Changes hot-reload automatically
-- Check Metro bundler for errors
-- Use React DevTools for debugging
-
-## Design Philosophy
-
-- **Minimalist:** Clean, uncluttered interface
-- **Dark Theme:** Easy on the eyes, modern aesthetic
-- **Mobile-First:** Optimized for phone screens
-- **Performance:** Fast loading, smooth animations
-- **Intuitive:** Clear navigation, obvious actions
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-MIT
+This project is licensed under the MIT License.
+
+## Acknowledgments
+
+- Google Gemini AI for meal analysis
+- Supabase for backend infrastructure
+- Expo team for the amazing development platform
+- React Native community for excellent libraries
+
+## Contact
+
+For questions or support, please open an issue on GitHub.
+
+---
+
+**Built with ❤️ using React Native and Expo**
