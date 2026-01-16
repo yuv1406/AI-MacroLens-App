@@ -14,7 +14,7 @@ import { DonutChart } from '../components/DonutChart';
 import { VerticalPillGauge } from '../components/VerticalPillGauge';
 import { HydrationDonut } from '../components/HydrationDonut';
 import { MealCarousel } from '../components/MealCarousel';
-import { BottomSheet, BottomSheetHandle } from '../components/BottomSheet';
+import { FullScreenModal } from '../components/FullScreenModal';
 import { LoadingSpinner } from '../components/ui/LoadingSpinner';
 import { PlusIcon } from '../components/icons/PlusIcon';
 import { WandSparkles, SquarePen } from 'lucide-react-native';
@@ -41,8 +41,8 @@ export function DashboardScreen() {
     const [isAiAnalysis, setIsAiAnalysis] = useState(false);
     const [analysisStep, setAnalysisStep] = useState<AnalysisStep>('uploading');
     const [loadingMessage, setLoadingMessage] = useState('');
-    const manualLogSheetRef = useRef<BottomSheetHandle>(null);
-    const aiLogSheetRef = useRef<BottomSheetHandle>(null);
+    const [manualModalVisible, setManualModalVisible] = useState(false);
+    const [aiModalVisible, setAiModalVisible] = useState(false);
 
     const onRefresh = useCallback(async () => {
         setRefreshing(true);
@@ -168,11 +168,15 @@ export function DashboardScreen() {
                 <MealCarousel meals={meals} />
             </ScrollView>
 
-            {/* Bottom Sheets */}
-            <BottomSheet ref={manualLogSheetRef} title="Log Meal">
+            {/* Full Screen Modals */}
+            <FullScreenModal
+                visible={manualModalVisible}
+                title="Log Meal"
+                onClose={() => setManualModalVisible(false)}
+            >
                 <ManualLogContent
                     onClose={() => {
-                        manualLogSheetRef.current?.close();
+                        setManualModalVisible(false);
                         refetchMeals();
                         refetchHydration();
                     }}
@@ -183,12 +187,16 @@ export function DashboardScreen() {
                         if (step) setAnalysisStep(step);
                     }}
                 />
-            </BottomSheet>
+            </FullScreenModal>
 
-            <BottomSheet ref={aiLogSheetRef} title="AI Meal Analysis">
+            <FullScreenModal
+                visible={aiModalVisible}
+                title="AI Meal Analysis"
+                onClose={() => setAiModalVisible(false)}
+            >
                 <AILogContent
                     onClose={() => {
-                        aiLogSheetRef.current?.close();
+                        setAiModalVisible(false);
                         refetchMeals();
                         refetchHydration();
                     }}
@@ -199,7 +207,7 @@ export function DashboardScreen() {
                         if (step) setAnalysisStep(step);
                     }}
                 />
-            </BottomSheet>
+            </FullScreenModal>
 
             {/* Global Loading Overlay - Renders at screen level */}
             {isLoading && (
@@ -216,8 +224,8 @@ export function DashboardScreen() {
 
             {/* Floating Action Button */}
             <FloatingActionButton
-                onAIPress={() => aiLogSheetRef.current?.snapToIndex(0)}
-                onManualPress={() => manualLogSheetRef.current?.snapToIndex(0)}
+                onAIPress={() => setAiModalVisible(true)}
+                onManualPress={() => setManualModalVisible(true)}
             />
         </SafeAreaView>
     );

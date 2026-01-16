@@ -14,7 +14,7 @@ import { MealCard } from '../components/MealCard';
 import { WaterLogCard } from '../components/WaterLogCard';
 import { MealCardSkeleton } from '../components/MealCardSkeleton';
 import { WaterLogCardSkeleton } from '../components/WaterLogCardSkeleton';
-import { BottomSheet, BottomSheetHandle } from '../components/BottomSheet';
+import { FullScreenModal } from '../components/FullScreenModal';
 import { ManualLogContent } from '../components/ManualLogContent';
 import { AILogContent } from '../components/AILogContent';
 import { ChevronLeftIcon } from '../components/icons/ChevronLeftIcon';
@@ -38,8 +38,8 @@ export function DailyLogScreen() {
     const [refreshing, setRefreshing] = useState(false);
     const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
     const [deleteTarget, setDeleteTarget] = useState<{ type: 'meal' | 'water'; id: string } | null>(null);
-    const manualLogSheetRef = useRef<BottomSheetHandle>(null);
-    const aiLogSheetRef = useRef<BottomSheetHandle>(null);
+    const [manualModalVisible, setManualModalVisible] = useState(false);
+    const [aiModalVisible, setAiModalVisible] = useState(false);
 
     const onRefresh = useCallback(async () => {
         setRefreshing(true);
@@ -249,18 +249,32 @@ export function DailyLogScreen() {
 
             {/* Floating Action Button */}
             <FloatingActionButton
-                onAIPress={() => aiLogSheetRef.current?.snapToIndex(0)}
-                onManualPress={() => manualLogSheetRef.current?.snapToIndex(0)}
+                onAIPress={() => setAiModalVisible(true)}
+                onManualPress={() => setManualModalVisible(true)}
             />
 
-            {/* Bottom Sheets */}
-            <BottomSheet ref={manualLogSheetRef} title="Log Meal">
-                <ManualLogContent selectedDate={selectedDate} onClose={() => manualLogSheetRef.current?.close()} />
-            </BottomSheet>
+            {/* Full Screen Modals */}
+            <FullScreenModal
+                visible={manualModalVisible}
+                title="Log Meal"
+                onClose={() => setManualModalVisible(false)}
+            >
+                <ManualLogContent
+                    selectedDate={selectedDate}
+                    onClose={() => setManualModalVisible(false)}
+                />
+            </FullScreenModal>
 
-            <BottomSheet ref={aiLogSheetRef} title="AI Meal Analysis">
-                <AILogContent selectedDate={selectedDate} onClose={() => aiLogSheetRef.current?.close()} />
-            </BottomSheet>
+            <FullScreenModal
+                visible={aiModalVisible}
+                title="AI Meal Analysis"
+                onClose={() => setAiModalVisible(false)}
+            >
+                <AILogContent
+                    selectedDate={selectedDate}
+                    onClose={() => setAiModalVisible(false)}
+                />
+            </FullScreenModal>
 
             {/* Toast Notifications */}
             {toasts.map((toast) => (
