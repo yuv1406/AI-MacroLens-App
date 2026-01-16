@@ -2,9 +2,10 @@ import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../config/supabase';
 import { HydrationLog } from '../types';
 import { HYDRATION_QUICK_ADD } from '../constants/defaults';
+import { cacheManager } from '../utils/cacheManager';
 
-// Cache to store water logs by date
-const waterLogsCache = new Map<string, HydrationLog[]>();
+// Use centralized cache manager instead of module-level cache
+const waterLogsCache = cacheManager.getHydrationCache();
 
 // Module-level cache version for cross-instance updates
 let globalCacheVersion = 0;

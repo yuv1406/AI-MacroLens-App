@@ -50,9 +50,10 @@ export function MealCard({ meal, onEdit, onDelete }: MealCardProps) {
                             <ChevronDown size={20} color={COLORS.textSecondary} />
                         )}
                     </View>
-                    {meal.meal_description && (
+                    {/* Show AI meal_description if available, otherwise show user description */}
+                    {(meal.meal_description || meal.description) && (
                         <Text style={styles.description} numberOfLines={expanded ? undefined : 2}>
-                            {meal.meal_description}
+                            {meal.meal_description || meal.description}
                         </Text>
                     )}
                     <View style={styles.macros}>
@@ -65,12 +66,6 @@ export function MealCard({ meal, onEdit, onDelete }: MealCardProps) {
                     {/* Expanded section showing full details */}
                     {expanded && (
                         <View style={styles.expandedSection}>
-                            {meal.description && (
-                                <View style={styles.detailRow}>
-                                    <Text style={styles.detailLabel}>User Notes:</Text>
-                                    <Text style={styles.detailValue}>{meal.description}</Text>
-                                </View>
-                            )}
                             {meal.source && (
                                 <View style={styles.detailRow}>
                                     <Text style={styles.detailLabel}>Source:</Text>
@@ -83,12 +78,6 @@ export function MealCard({ meal, onEdit, onDelete }: MealCardProps) {
                                 <View style={styles.detailRow}>
                                     <Text style={styles.detailLabel}>AI Model:</Text>
                                     <Text style={styles.detailValue}>{meal.ai_model}</Text>
-                                </View>
-                            )}
-                            {meal.description && (
-                                <View style={styles.detailRow}>
-                                    <Text style={styles.detailLabel}>Additional Info:</Text>
-                                    <Text style={styles.detailValue}>{meal.description}</Text>
                                 </View>
                             )}
                         </View>

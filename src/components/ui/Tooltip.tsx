@@ -7,9 +7,10 @@ interface TooltipProps {
     backgroundColor: string;
     onHide: () => void;
     duration?: number;
+    position?: 'left' | 'right'; // Control tooltip alignment
 }
 
-export function Tooltip({ message, backgroundColor, onHide, duration = 3000 }: TooltipProps) {
+export function Tooltip({ message, backgroundColor, onHide, duration = 3000, position = 'right' }: TooltipProps) {
     const opacity = new Animated.Value(0);
 
     useEffect(() => {
@@ -31,9 +32,17 @@ export function Tooltip({ message, backgroundColor, onHide, duration = 3000 }: T
     }, []);
 
     return (
-        <Animated.View style={[styles.container, { backgroundColor, opacity }]}>
+        <Animated.View style={[
+            styles.container,
+            position === 'left' ? styles.containerLeft : styles.containerRight,
+            { backgroundColor, opacity }
+        ]}>
             <Text style={styles.text}>{message}</Text>
-            <View style={[styles.arrow, { borderTopColor: backgroundColor }]} />
+            <View style={[
+                styles.arrow,
+                position === 'left' ? styles.arrowLeft : styles.arrowRight,
+                { borderTopColor: backgroundColor }
+            ]} />
         </Animated.View>
     );
 }
@@ -42,17 +51,22 @@ const styles = StyleSheet.create({
     container: {
         position: 'absolute',
         bottom: '100%',
-        right: 0, // Anchor to right to prevent overflow
         marginBottom: 8,
-        paddingHorizontal: SPACING.md, // Wider horizontal padding
+        paddingHorizontal: SPACING.md,
         paddingVertical: 6,
         borderRadius: RADIUS.sm,
         alignItems: 'center',
         justifyContent: 'center',
         zIndex: 1000,
-        minWidth: 150, // Wider base
-        maxWidth: 250, // Screen safe
+        minWidth: 150,
+        maxWidth: 250,
         ...SHADOWS.md,
+    },
+    containerLeft: {
+        left: 0, // Anchor to left for leftmost gauges
+    },
+    containerRight: {
+        right: 0, // Anchor to right for other gauges
     },
     text: {
         color: COLORS.text,
@@ -64,7 +78,6 @@ const styles = StyleSheet.create({
     arrow: {
         position: 'absolute',
         bottom: -4,
-        right: 8, // Move arrow to match right alignment
         width: 0,
         height: 0,
         borderLeftWidth: 4,
@@ -72,5 +85,11 @@ const styles = StyleSheet.create({
         borderTopWidth: 4,
         borderLeftColor: 'transparent',
         borderRightColor: 'transparent',
+    },
+    arrowLeft: {
+        left: 8, // Position arrow on left side
+    },
+    arrowRight: {
+        right: 8, // Position arrow on right side
     },
 });

@@ -11,6 +11,7 @@ interface VerticalPillGaugeProps {
     target: number;
     color: string;
     unit?: string;
+    tooltipPosition?: 'left' | 'right'; // Control tooltip alignment
 }
 
 export const VerticalPillGauge = memo(function VerticalPillGauge({
@@ -19,6 +20,7 @@ export const VerticalPillGauge = memo(function VerticalPillGauge({
     target,
     color,
     unit = 'g',
+    tooltipPosition = 'right',
 }: VerticalPillGaugeProps) {
     const [tooltipVisible, setTooltipVisible] = useState(false);
     const [hasSeenTooltip, setHasSeenTooltip] = useState(false);
@@ -69,6 +71,7 @@ export const VerticalPillGauge = memo(function VerticalPillGauge({
                                 message={warningMessage}
                                 backgroundColor={warningIconColor}
                                 onHide={() => setTooltipVisible(false)}
+                                position={tooltipPosition}
                             />
                         )}
                     </View>

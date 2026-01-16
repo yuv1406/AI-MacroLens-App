@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
 import { Session, User } from '@supabase/supabase-js';
+import { cacheManager } from '../utils/cacheManager';
 
 export function useAuth() {
     const [session, setSession] = useState<Session | null>(null);
@@ -18,7 +19,13 @@ export function useAuth() {
         // Listen for auth changes
         const {
             data: { subscription },
-        } = supabase.auth.onAuthStateChange((_event, session) => {
+        } = supabase.auth.onAuthStateChange((event, session) => {
+            // Clear all caches on sign out to prevent cross-user data leaks
+            if (event === 'SIGNED_OUT') {
+                console.log('🔒 Auth: User signed out, clearing all caches');
+                cacheManager.clearAll();
+            }
+
             setSession(session);
             setUser(session?.user ?? null);
         });
@@ -45,8 +52,17 @@ export function useAuth() {
     const signOut = async () => {
         setLoading(true);
         try {
+            // Clear all caches BEFORE signing out to prevent data leaks
+            console.log('🔒 Auth: Clearing caches before sign out');
+            cacheManager.clearAll();
+
             const { error } = await supabase.auth.signOut();
             if (error) throw error;
+
+            // Reset local state
+            setSession(null);
+            setUser(null);
+
             return { error: null };
         } catch (error: any) {
             return { error: error.message };

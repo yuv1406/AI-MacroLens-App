@@ -98,6 +98,28 @@ export function DailyLogScreen() {
 
     const summary = getDailySummary();
 
+    // Merge meals and water logs into a single chronological timeline
+    const timeline = React.useMemo(() => {
+        const combined: Array<
+            | { type: 'meal'; data: typeof meals[0]; timestamp: Date }
+            | { type: 'water'; data: typeof waterLogs[0]; timestamp: Date }
+        > = [
+                ...meals.map((meal) => ({
+                    type: 'meal' as const,
+                    data: meal,
+                    timestamp: new Date(meal.created_at),
+                })),
+                ...waterLogs.map((log) => ({
+                    type: 'water' as const,
+                    data: log,
+                    timestamp: new Date(log.created_at),
+                })),
+            ];
+
+        // Sort by timestamp, most recent first
+        return combined.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+    }, [meals, waterLogs]);
+
     return (
         <SafeAreaView style={styles.container} edges={['top']}>
             <View style={styles.header}>
@@ -142,14 +164,11 @@ export function DailyLogScreen() {
                 >
                     {/* Loading skeletons */}
                     <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>Water Intake</Text>
-                        <WaterLogCardSkeleton />
-                        <WaterLogCardSkeleton />
-                    </View>
-                    <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>Meals</Text>
+                        <Text style={styles.sectionTitle}>Today's Activity</Text>
                         <MealCardSkeleton />
+                        <WaterLogCardSkeleton />
                         <MealCardSkeleton />
+                        <WaterLogCardSkeleton />
                     </View>
                 </ScrollView>
             ) : meals.length === 0 && waterLogs.length === 0 ? (
@@ -171,33 +190,29 @@ export function DailyLogScreen() {
                         />
                     }
                 >
-                    {/* Water Logs Section */}
-                    {waterLogs.length > 0 && (
-                        <View style={styles.section}>
-                            <Text style={styles.sectionTitle}>Water Intake</Text>
-                            {waterLogs.map((log) => (
-                                <WaterLogCard
-                                    key={log.id}
-                                    waterLog={log}
-                                    onDelete={() => handleDeleteWater(log.id)}
-                                />
-                            ))}
-                        </View>
-                    )}
-
-                    {/* Meals Section */}
-                    {meals.length > 0 && (
-                        <View style={styles.section}>
-                            <Text style={styles.sectionTitle}>Meals</Text>
-                            {meals.map((meal) => (
-                                <MealCard
-                                    key={meal.id}
-                                    meal={meal}
-                                    onDelete={() => handleDelete(meal.id)}
-                                />
-                            ))}
-                        </View>
-                    )}
+                    {/* Unified Timeline - Meals and Water Logs */}
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Today's Activity</Text>
+                        {timeline.map((item, index) => {
+                            if (item.type === 'meal') {
+                                return (
+                                    <MealCard
+                                        key={`meal-${item.data.id}`}
+                                        meal={item.data}
+                                        onDelete={() => handleDelete(item.data.id)}
+                                    />
+                                );
+                            } else {
+                                return (
+                                    <WaterLogCard
+                                        key={`water-${item.data.id}`}
+                                        waterLog={item.data}
+                                        onDelete={() => handleDeleteWater(item.data.id)}
+                                    />
+                                );
+                            }
+                        })}
+                    </View>
 
                     {/* Daily Summary */}
                     <Card style={styles.summaryCard}>

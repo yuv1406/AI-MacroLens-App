@@ -114,6 +114,7 @@ export function DashboardScreen() {
                             current={summary.totalProtein}
                             target={profile.protein_target}
                             color={COLORS.protein}
+                            tooltipPosition="left"
                         />
                         <VerticalPillGauge
                             label="Carbs"

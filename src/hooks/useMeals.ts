@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../config/supabase';
 import { Meal, DailySummary } from '../types';
+import { cacheManager } from '../utils/cacheManager';
 
-// Cache to store meals by date
-const mealsCache = new Map<string, Meal[]>();
+// Use centralized cache manager instead of module-level cache
+const mealsCache = cacheManager.getMealsCache();
 
 // Module-level cache version for cross-instance updates
 let globalCacheVersion = 0;
